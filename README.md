@@ -1,3 +1,5 @@
+# ra-dash-frontend
+Application frontend for camplaints management
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
