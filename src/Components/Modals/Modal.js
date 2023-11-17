@@ -21,30 +21,12 @@ class ModalForm extends Component {
 
     const label = this.props.buttonLabel
 
-    let button = ''
+    let button = <Button
+    color="success"
+    onClick={this.toggle}
+    style={{ float: "left", marginRight: "10px" }}>{label}
+  </Button>
     let title = this.props.title
-
-    if (label === 'Editar') {
-      button = <Button
-        color="warning"
-        onClick={this.toggle}
-        style={{ float: "left", marginRight: "10px" }}>{label}
-      </Button>
-    } else if (label === 'Adicionar') {
-      button = <Button
-        color="success"
-        onClick={this.toggle}
-        style={{ float: "left", marginRight: "10px" }}>{label}
-      </Button>
-    } else {
-      button = <Button
-        color="success"
-        onClick={this.toggle}
-        style={{ float: "left", marginRight: "10px" }}>{label}
-      </Button>
-    }
-
-
     return (
       <div>
         {button}
