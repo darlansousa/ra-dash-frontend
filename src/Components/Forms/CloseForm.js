@@ -18,7 +18,7 @@ class CloseForm extends React.Component {
 
   submitFormEdit = e => {
     e.preventDefault()
-    fetch(`http://localhost:3000/complaints/${this.state.id}/close`, {
+    fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.state.id}/close`, {
       method: 'put',
       headers: {
         'Content-Type': 'application/json'

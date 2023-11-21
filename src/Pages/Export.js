@@ -9,7 +9,7 @@ class Export extends Component {
   }
 
   getItems(){
-    fetch('http://localhost:3000/complaints')
+    fetch(`${process.env.REACT_APP_API_HOST}/complaints`)
       .then(response => response.json())
       .then(items => this.setState({items}))
       .catch(err => console.log(err))

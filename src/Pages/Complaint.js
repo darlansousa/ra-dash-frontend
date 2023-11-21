@@ -40,7 +40,7 @@ class Complaint extends Component {
     }
 
     getItem() {
-        fetch(`http://localhost:3000/complaints/${this.props.params.id}`)
+        fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`)
             .then(response => response.json())
             .then(item => this.setState(item))
             .catch(err => console.log(err))
@@ -48,7 +48,7 @@ class Complaint extends Component {
 
     submitFormEdit = e => {
         e.preventDefault()
-        fetch(`http://localhost:3000/complaints/${this.props.params.id}`, {
+        fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`, {
             method: 'put',
             headers: {
                 'Content-Type': 'application/json'

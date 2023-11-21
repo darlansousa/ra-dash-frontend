@@ -16,7 +16,7 @@ class Complaints extends Component {
             'Consumo - Baixa injeção',
             'Multa/Cancelamento',
             'Atendimento',
-            'Inocnsistência na venda',
+            'Inconsistência na venda',
             'Portal/App',
             'Points',
             'Cobrança indevida',
@@ -31,10 +31,12 @@ class Complaints extends Component {
     }
 
     getItems() {
-        console.log()
-        fetch(`http://localhost:3000/complaints?${this.props.query.toString()}`)
+
+        fetch(`${process.env.REACT_APP_API_HOST}/complaints?${this.props.query.toString()}`)
             .then(response => response.json())
-            .then(items => this.setState({ items }))
+            .then(items => {
+                this.setState({ items })
+            })
             .catch(err => console.log(err))
     }
 

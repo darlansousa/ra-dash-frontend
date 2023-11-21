@@ -7,15 +7,15 @@ import Tooltip from 'react-bootstrap/Tooltip';
 class App extends Component {
   
   state = {
-    "all": 47,
-    "closed": 7,
-    "pending": 40,
-    "ia_review": 0,
-    "pending_process": 7
+    "all": 0,
+    "closed": 0,
+    "pending": 0,
+    "ai_review": 0,
+    "pending_process": 0
 }
 
   getInfo() {
-    fetch('http://localhost:3000/complaints/info')
+    fetch(`${process.env.REACT_APP_API_HOST}/complaints/info`)
       .then(response => response.json())
       .then(item => this.setState(item))
       .catch(err => console.log(err))

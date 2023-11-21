@@ -10,7 +10,7 @@ class DataTable extends Component {
   deleteItem = id => {
     let confirmDelete = window.confirm('Deseja deletar o item?')
     if (confirmDelete) {
-      fetch('http://localhost:3000/complaints', {
+      fetch(`${process.env.REACT_APP_API_HOST}/complaints/${id}`, {
         method: 'delete',
         headers: {
           'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ class DataTable extends Component {
             <ButtonGroup size="sm">
               <ModalForm buttonLabel="Fechar" title="Fechar reclamação" item={item} updateState={this.props.updateState} /> 
               <DropdownButton title="Mais" id="bg-nested-dropdown">
-                  <Dropdown.Item eventKey="1" href={('https://www.reclameaqui.com.br/area-da-empresa/reclamacoes/' + item.ra_cod)} target="_blank">Acessar no RA</Dropdown.Item>
+                  <Dropdown.Item eventKey="1" href={(`${process.env.REACT_APP_COMPLAINTS_LINK}` + item.ra_cod)} target="_blank">Acessar no RA</Dropdown.Item>
                   <Dropdown.Item eventKey="2" href={('complaints/' + item.id)}>Editar</Dropdown.Item>
                   <Dropdown.Item eventKey="3" color="danger" onClick={() => this.deleteItem(item.id)}>Deletar</Dropdown.Item>
                 </DropdownButton>
