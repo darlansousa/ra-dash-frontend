@@ -16,7 +16,7 @@ class CloseForm extends React.Component {
   }
 
   onChange = e => {
-    this.setState({ [e.target.name]: e.target.value })
+    this.setState({ item: { ...this.state.item, [e.target.id]: e.target.value } })
   }
 
   getClassifications() {
@@ -89,16 +89,12 @@ class CloseForm extends React.Component {
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label for="system_sub_reason">Sub-motivo</Label>
-          <Input type="text" name="system_sub_reason" id="system_sub_reason" onChange={this.onChange} value={this.state.item.system_sub_reason === null ? '' : this.state.item.system_sub_reason} required />
-        </FormGroup>
-        <FormGroup>
           <Label for="close_date">Data do fechamento</Label>
           <Input type="date" placeholder="date placeholder" name="close_date" id="close_date" onChange={this.onChange} value={this.state.item.close_date === null ? '' : this.state.item.close_date.split('T')[0]} required />
         </FormGroup>
         <FormGroup>
           <Label for="complainer_note">Nota</Label>
-          <Input type="text" name="complainer_note" id="complainer_note" onChange={this.onChange} value={this.state.item.complainer_note === null ? '' : this.state.item.complainer_note} required />
+          <Input type="text" name="complainer_note" id="complainer_note" onChange={this.onChange} value={this.state.item.complainer_note === null ? '' : this.state.item.complainer_note} required pattern="[0-9]|10" />
         </FormGroup>
         <FormGroup>
           <Label for="negotiate_again">Faria negócio novamente?</Label>

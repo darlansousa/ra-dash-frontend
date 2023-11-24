@@ -117,10 +117,11 @@ class Complaint extends Component {
                     </Row>
                     <Row>
                         <Stack direction="horizontal" gap={2}>
+                            <Button variant="info" href="/complaints">Voltar</Button>{' '}
                             <Button variant="primary">{this.state.item.complaints_status === 'closed' ? 'Status: Respondida' : 'Status: Pendente'}</Button>{' '}
                             <Button variant="primary" target='_blank' href={(`${process.env.REACT_APP_COMPLAINTS_LINK}` + this.state.item.ra_cod)}>Acessar no reclame aqui</Button>{' '}
                             <Button variant="primary">Data da reclamação: {this.state.item.date_description}</Button>{' '}
-                            <Button variant="primary" onClick={() => { navigator.clipboard.writeText(this.state.item.uc) }}>UC: {this.state.item.uc}</Button>{' '}
+                            <Button variant="primary" onClick={() => { navigator.clipboard.writeText(this.state.item.uc) }}> Copiar UC {this.state.item.uc}</Button>{' '}
                             <Button variant="primary">Nota: {this.state.item.complainer_note ? this.state.item.complainer_note : 'Pendente'}</Button>{' '}
                             <Button variant="success" type='submit'>Salvar</Button>{' '}
                         </Stack>
