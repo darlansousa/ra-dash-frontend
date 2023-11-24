@@ -10,39 +10,52 @@ import withRouter from '../withRouter'
 class Complaint extends Component {
     error = false
     state = {
-        "id": 0,
-        "ra_cod": "",
-        "ra_id": "",
-        "title": "",
-        "date_description": "",
-        "chanel": "",
-        "reason": "",
-        "description": "",
-        "complainer_id": 0,
-        "id_occurrence": "",
-        "close_date": "",
-        "system_sub_reason": "",
-        "complainer_note": "",
-        "complaints_status": "",
-        "ai_classification": null,
-        "negotiate_again": "",
-        "name": "",
-        "cpf": "",
-        "uc": "",
-        "city": "",
-        "email": "",
-        "phone": "",
-        "is_client": ""
+        classifications: [],
+        item: {
+            "id": 0,
+            "ra_cod": "",
+            "ra_id": "",
+            "title": "",
+            "date_description": "",
+            "chanel": "",
+            "reason": "",
+            "description": "",
+            "complainer_id": 0,
+            "id_occurrence": "",
+            "close_date": "",
+            "system_sub_reason": "",
+            "complainer_note": "",
+            "complaints_status": "",
+            "ai_classification": null,
+            "negotiate_again": "",
+            "name": "",
+            "cpf": "",
+            "uc": "",
+            "city": "",
+            "email": "",
+            "phone": "",
+            "is_client": ""
+        }
     }
 
     onChange = e => {
-        this.setState({ [e.target.id]: e.target.value })
+        this.setState({ item: { ...this.state.item, [e.target.id]: e.target.value } })
     }
 
     getItem() {
         fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`)
             .then(response => response.json())
-            .then(item => this.setState(item))
+            .then(item => this.setState({ item: item }))
+            .catch(err => console.log(err))
+    }
+
+    getClassifications() {
+
+        fetch(`${process.env.REACT_APP_API_HOST}/classifications`)
+            .then(response => response.json())
+            .then(classifications => {
+                this.setState({ classifications })
+            })
             .catch(err => console.log(err))
     }
 
@@ -54,29 +67,29 @@ class Complaint extends Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                id: this.state.id,
-                ra_cod: this.state.ra_cod,
-                ra_id: this.state.ra_id,
-                title: this.state.title,
-                date_description: this.state.date_description,
-                chanel: this.state.chanel,
-                reason: this.state.reason,
-                description: this.state.description,
-                complainer_id: this.state.complainer_id,
-                id_occurrence: this.state.id_occurrence,
-                close_date: this.state.close_date,
-                system_sub_reason: this.state.system_sub_reason,
-                complainer_note: this.state.complainer_note,
-                complaints_status: this.state.complaints_status,
-                ai_classification: this.state.ai_classification,
-                negotiate_again: this.state.negotiate_again,
-                name: this.state.name,
-                cpf: this.state.cpf,
-                uc: this.state.uc,
-                city: this.state.city,
-                email: this.state.email,
-                phone: this.state.phone,
-                is_client: this.state.is_client
+                id: this.state.item.id,
+                ra_cod: this.state.item.ra_cod,
+                ra_id: this.state.item.ra_id,
+                title: this.state.item.title,
+                date_description: this.state.item.date_description,
+                chanel: this.state.item.chanel,
+                reason: this.state.item.reason,
+                description: this.state.item.description,
+                complainer_id: this.state.item.complainer_id,
+                id_occurrence: this.state.item.id_occurrence,
+                close_date: this.state.item.close_date,
+                system_sub_reason: this.state.item.system_sub_reason,
+                complainer_note: this.state.item.complainer_note,
+                complaints_status: this.state.item.complaints_status,
+                ai_classification: this.state.item.ai_classification,
+                negotiate_again: this.state.item.negotiate_again,
+                name: this.state.item.name,
+                cpf: this.state.item.cpf,
+                uc: this.state.item.uc,
+                city: this.state.item.city,
+                email: this.state.item.email,
+                phone: this.state.item.phone,
+                is_client: this.state.item.is_client
             })
         })
             .then(response => response.json())
@@ -92,22 +105,23 @@ class Complaint extends Component {
 
     componentDidMount() {
         this.getItem()
+        this.getClassifications()
     }
 
     render() {
         return (
             <Container className="Complaint">
-                <Form onSubmit={this.submitFormEdit}>
+                <Form onSubmit={this.submitFormEdit} validated>
                     <Row>
                         <p></p>
                     </Row>
                     <Row>
                         <Stack direction="horizontal" gap={2}>
-                            <Button variant="primary">Status: {this.state.complaints_status ? this.state.complaints_status : 'Peendente'}</Button>{' '}
-                            <Button variant="primary">Acessar no reclame aqui</Button>{' '}
-                            <Button variant="primary">Data da reclamação: {this.state.date_description}</Button>{' '}
-                            <Button variant="primary" onClick={() => { navigator.clipboard.writeText(this.state.uc) }}>UC: {this.state.uc}</Button>{' '}
-                            <Button variant="primary">Nota: {this.state.complainer_note}</Button>{' '}
+                            <Button variant="primary">{this.state.item.complaints_status === 'closed' ? 'Status: Respondida' : 'Status: Pendente'}</Button>{' '}
+                            <Button variant="primary" target='_blank' href={(`${process.env.REACT_APP_COMPLAINTS_LINK}` + this.state.item.ra_cod)}>Acessar no reclame aqui</Button>{' '}
+                            <Button variant="primary">Data da reclamação: {this.state.item.date_description}</Button>{' '}
+                            <Button variant="primary" onClick={() => { navigator.clipboard.writeText(this.state.item.uc) }}>UC: {this.state.item.uc}</Button>{' '}
+                            <Button variant="primary">Nota: {this.state.item.complainer_note ? this.state.item.complainer_note : 'Pendente'}</Button>{' '}
                             <Button variant="success" type='submit'>Salvar</Button>{' '}
                         </Stack>
                     </Row>
@@ -121,19 +135,19 @@ class Complaint extends Component {
                                     <Accordion.Body>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>RA ID</Form.Label>
-                                            <Form.Control type="text" id="ra_id" className="ra_id" value={this.state.ra_id} onChange={this.onChange} />
+                                            <Form.Control type="text" id="ra_id" className="ra_id" value={this.state.item.ra_id} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Título</Form.Label>
-                                            <Form.Control type="text" id="title" className="title" value={this.state.title} onChange={this.onChange} />
+                                            <Form.Control type="text" id="title" className="title" value={this.state.item.title} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Descrição</Form.Label>
-                                            <Form.Control as="textarea" id="description" className="description" rows={5} value={this.state.description} onChange={this.onChange} />
+                                            <Form.Control as="textarea" id="description" className="description" rows={5} value={this.state.item.description} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Data</Form.Label>
-                                            <Form.Control type="text" id="date_description" className="date_description" value={this.state.date_description} onChange={this.onChange} />
+                                            <Form.Control type="text" id="date_description" className="date_description" value={this.state.item.date_description} onChange={this.onChange} required />
                                         </Form.Group>
                                     </Accordion.Body>
                                 </Accordion.Item>
@@ -145,20 +159,26 @@ class Complaint extends Component {
                                     <Accordion.Body>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>ID da Ocorrência</Form.Label>
-                                            <Form.Control type="text" id="id_occurrence" className="id_occurrence" value={this.state.id_occurrence} onChange={this.onChange} />
+                                            <Form.Control type="text" id="id_occurrence" className="id_occurrence" value={this.state.item.id_occurrence} onChange={this.onChange} />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Sub-motivo</Form.Label>
-                                            <Form.Control type="text" id="system_sub_reason" className="system_sub_reason" value={this.state.system_sub_reason} onChange={this.onChange} />
+                                            <Form.Select id="system_sub_reason" className="system_sub_reason" value={this.state.item.system_sub_reason} onChange={this.onChange}>
+                                                {
+                                                    this.state.classifications.map(reason => {
+                                                        return (<option key={reason.id} value={reason.description}>{reason.description}</option>)
+                                                    })
+                                                }
+                                            </Form.Select>
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Nota</Form.Label>
-                                            <Form.Control type="text" id="complainer_note" className="complainer_note" value={this.state.complainer_note} onChange={this.onChange} />
+                                            <Form.Control type="text" id="complainer_note" className="complainer_note" value={this.state.item.complainer_note} onChange={this.onChange} pattern="[0-9]|10" />
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Faria negócio novamente?</Form.Label>
-                                            <Form.Select id="negotiate_again" className="negotiate_again" value={this.state.negotiate_again} onChange={this.onChange}>
+                                            <Form.Select id="negotiate_again" className="negotiate_again" value={this.state.item.negotiate_again} onChange={this.onChange}>
                                                 <option value="Sim">Sim</option>
                                                 <option value="Não">Não</option>
                                             </Form.Select>
@@ -174,31 +194,31 @@ class Complaint extends Component {
                                     <Accordion.Body>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Nome</Form.Label>
-                                            <Form.Control type="text" id="name" className="name" value={this.state.name} onChange={this.onChange} />
+                                            <Form.Control type="text" id="name" className="name" value={this.state.item.name} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>CPF</Form.Label>
-                                            <Form.Control type="text" id="cpf" className="cpf" value={this.state.cpf} onChange={this.onChange} />
+                                            <Form.Control type="text" id="cpf" className="cpf" value={this.state.item.cpf} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>UC</Form.Label>
-                                            <Form.Control type="text" id="uc" className="uc" value={this.state.uc} onChange={this.onChange} />
+                                            <Form.Control type="text" id="uc" className="uc" value={this.state.item.uc} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Cidade</Form.Label>
-                                            <Form.Control type="text" id="city" className="city" value={this.state.city} onChange={this.onChange} />
+                                            <Form.Control type="text" id="city" className="city" value={this.state.item.city} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>E-mail</Form.Label>
-                                            <Form.Control type="email" id="email" className="email" value={this.state.email} onChange={this.onChange} />
+                                            <Form.Control type="email" id="email" className="email" value={this.state.item.email} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Telefone</Form.Label>
-                                            <Form.Control type="text" id="phone" className="phone" value={this.state.phone} onChange={this.onChange} />
+                                            <Form.Control type="text" id="phone" className="phone" value={this.state.item.phone} onChange={this.onChange} required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>É cliente?</Form.Label>
-                                            <Form.Select id="negotiate_again" className="negotiate_again" value={this.state.negotiate_again} onChange={this.onChange}>
+                                            <Form.Select id="negotiate_again" className="negotiate_again" value={this.state.item.negotiate_again} onChange={this.onChange}>
                                                 <option value="Sim">Sim</option>
                                                 <option value="Não">Não</option>
                                             </Form.Select>

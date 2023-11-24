@@ -12,22 +12,23 @@ class Complaints extends Component {
     state = {
         items: [],
         input: '',
-        reasons: ['Economia',
-            'Consumo - Baixa injeção',
-            'Multa/Cancelamento',
-            'Atendimento',
-            'Inconsistência na venda',
-            'Portal/App',
-            'Points',
-            'Cobrança indevida',
-            'Prazo conexão',
-            'Outros']
+        classifications: []
     }
 
     onChangeHandler(e) {
         this.setState({
             input: e.target.value,
         })
+    }
+
+    getClassifications() {
+
+        fetch(`${process.env.REACT_APP_API_HOST}/classifications`)
+            .then(response => response.json())
+            .then(classifications => {
+                this.setState({ classifications })
+            })
+            .catch(err => console.log(err))
     }
 
     getItems() {
@@ -63,6 +64,7 @@ class Complaints extends Component {
 
     componentDidMount() {
         this.getItems()
+        this.getClassifications()
     }
 
     render() {
@@ -80,20 +82,20 @@ class Complaints extends Component {
                         <ButtonGroup>
                             <Button variant="secondary" href="/complaints">Todas</Button>
                             <DropdownButton as={ButtonGroup} title="Filtrar por status" id="bg-nested-dropdown">
-                                <Dropdown.Item eventKey="1" href="?status=pending">Não Respondidas</Dropdown.Item>
-                                <Dropdown.Item eventKey="2" href="?status=closed">Respondidas</Dropdown.Item>
+                                <Dropdown.Item key="1" eventKey="1" href="?status=pending">Não Respondidas</Dropdown.Item>
+                                <Dropdown.Item key="2" eventKey="2" href="?status=closed">Respondidas</Dropdown.Item>
                             </DropdownButton>
                             <DropdownButton as={ButtonGroup} title="Filtrar por sub-motivo" id="bg-nested-dropdown">
                                 {
-                                    this.state.reasons.map(reason => {
-                                        return (<Dropdown.Item key={reason} eventKey={reason} href={"?sys_reason=" + reason} >{reason}</Dropdown.Item>)
+                                    this.state.classifications.map(reason => {
+                                        return (<Dropdown.Item key={reason.id} eventKey={reason.id} href={"?sys_reason=" + reason.description} >{reason.description}</Dropdown.Item>)
                                     })
                                 }
                             </DropdownButton>
                             <DropdownButton as={ButtonGroup} title="Filtrar por avaliação da IA" id="bg-nested-dropdown">
                                 {
-                                    this.state.reasons.map(reason => {
-                                        return (<Dropdown.Item key={'AI_'+reason} eventKey={reason} href={"?ai_classification=" + reason} >{reason}</Dropdown.Item>)
+                                    this.state.classifications.map(reason => {
+                                        return (<Dropdown.Item key={'AI_'+reason.id} eventKey={'AI_'+reason.id} href={"?ai_classification=" + reason.description} >{reason.description}</Dropdown.Item>)
                                     })
                                 }
                             </DropdownButton>

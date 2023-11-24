@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Table } from 'reactstrap';
+import Button from 'react-bootstrap/Button';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -42,11 +43,13 @@ class DataTable extends Component {
           <td>{item.name}</td>
           <td>
             <div style={{ width: "150px" }}>
-            <ButtonGroup size="sm">
-              <ModalForm buttonLabel="Fechar" title="Fechar reclamação" item={item} updateState={this.props.updateState} /> 
-              <DropdownButton title="Mais" id="bg-nested-dropdown">
+            <ButtonGroup>
+              {
+                item.complaints_status === 'closed' ? (<Button href={('complaints/' + item.id)} variant="info">Editar</Button>) : (<ModalForm buttonLabel="Fechar" title="Responder reclamação" item={item} updateState={this.props.updateState} /> )
+              }
+              <DropdownButton title="Mais" id="bg-nested-dropdown" as={ButtonGroup}>
                   <Dropdown.Item eventKey="1" href={(`${process.env.REACT_APP_COMPLAINTS_LINK}` + item.ra_cod)} target="_blank">Acessar no RA</Dropdown.Item>
-                  <Dropdown.Item eventKey="2" href={('complaints/' + item.id)}>Editar</Dropdown.Item>
+                  {item.complaints_status === 'closed' ? ('') : (<Dropdown.Item eventKey="2" href={('complaints/' + item.id)}>Editar</Dropdown.Item>)}
                   <Dropdown.Item eventKey="3" color="danger" onClick={() => this.deleteItem(item.id)}>Deletar</Dropdown.Item>
                 </DropdownButton>
             </ButtonGroup>
