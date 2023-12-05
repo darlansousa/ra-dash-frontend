@@ -10,6 +10,7 @@ import NoPage from "./Pages/NoPage";
 import Export from './Pages/Export';
 import Complaints from './Pages/Complaints';
 import Complaint from './Pages/Complaint';
+import Dashboard from './Pages/Dashboard';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -21,6 +22,7 @@ root.render(
           <Route path="export" element={<Export />} />
           <Route path="complaints" element={<Complaints />} />
           <Route path="complaints/:id" element={<Complaint />} />
+          <Route path="dash" element={<Dashboard />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>

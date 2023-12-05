@@ -4,18 +4,49 @@ import { CSVLink } from "react-csv"
 
 class Export extends Component {
 
+  now = new Date()
+  file_name = "RA_"
+    + this.now.getDay()
+    + this.now.getMonth()
+    + this.now.getFullYear()
+    + this.now.getHours()
+    + this.now.getMinutes()
+    + this.now.getSeconds()
+    + ".csv"
+
   state = {
     items: []
   }
 
-  getItems(){
-    fetch(`${process.env.REACT_APP_API_HOST}/complaints`)
+  getItems() {
+    fetch(`${process.env.REACT_APP_API_HOST}/complaints/export`)
       .then(response => response.json())
-      .then(items => this.setState({items}))
+      .then(items => this.setState({ items }))
       .catch(err => console.log(err))
   }
 
-  componentDidMount(){
+  postExports(items) {
+    fetch(`${process.env.REACT_APP_API_HOST}/exports`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(items
+        .map(item => {
+          return { ra_id : item["ID RECLAME AQUI"]}
+        }))
+    })
+      .then(response => {
+        if (response.status === 201) {
+          this.getItems()
+        } else {
+          window.alert(`Erro: ${response.json().dbError}`)
+        }
+      })
+      .catch(err => console.log(err))
+  }
+
+  componentDidMount() {
     this.getItems()
   }
 
@@ -24,17 +55,19 @@ class Export extends Component {
       <Container className="Export">
         <Row>
           <Col>
-            <h1 style={{margin: "20px 0"}}>Exportar</h1>
+            <h1 style={{ margin: "20px 0" }}>Exportar</h1>
+            <p>Existem {this.state.items.length} para exportação </p>
           </Col>
         </Row>
         <Row>
           <Col>
             <CSVLink
-              filename={"db.csv"}
+              filename={this.file_name}
               color="primary"
-              style={{float: "left", marginRight: "10px"}}
+              style={{ float: "left", marginRight: "10px" }}
               className="btn btn-primary"
-              data={this.state.items}>
+              data={this.state.items}
+              onClick={() => this.postExports(this.state.items)}>
               Download CSV
             </CSVLink>
           </Col>

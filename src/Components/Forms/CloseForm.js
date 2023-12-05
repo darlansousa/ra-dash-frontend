@@ -61,7 +61,7 @@ class CloseForm extends React.Component {
     if (this.props.item) {
       const { id, id_occurrence, close_date, system_sub_reason, complainer_note, negotiate_again } = this.props.item
       const default_negotiate_again = negotiate_again === null ? 'Sim' : negotiate_again
-      this.setState({item: { id, id_occurrence, close_date, system_sub_reason, complainer_note, default_negotiate_again }})
+      this.setState({item: { id, id_occurrence, close_date, system_sub_reason, complainer_note, negotiate_again: default_negotiate_again }})
       this.getClassifications()
     }
   }

@@ -4,6 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack';
 import Accordion from 'react-bootstrap/Accordion';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import withRouter from '../withRouter'
 
 
@@ -26,7 +29,7 @@ class Complaint extends Component {
             "system_sub_reason": "",
             "complainer_note": "",
             "complaints_status": "",
-            "ai_classification": null,
+            "ai_classification": "",
             "negotiate_again": "",
             "name": "",
             "cpf": "",
@@ -38,29 +41,50 @@ class Complaint extends Component {
         }
     }
 
-    onChange = e => {
-        this.setState({ item: { ...this.state.item, [e.target.id]: e.target.value } })
-    }
-
-    getItem() {
-        fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`)
+    save(item) {
+        fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`, {
+            method: 'put',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: item.id,
+                ra_cod: item.ra_cod,
+                ra_id: item.ra_id,
+                title: item.title,
+                date_description: item.date_description,
+                chanel: item.chanel,
+                reason: item.reason,
+                description: item.description,
+                complainer_id: item.complainer_id,
+                id_occurrence: item.id_occurrence,
+                close_date: item.close_date,
+                system_sub_reason: item.system_sub_reason,
+                complainer_note: item.complainer_note,
+                complaints_status: item.complaints_status,
+                ai_classification: item.ai_classification,
+                negotiate_again: item.negotiate_again,
+                name: item.name,
+                cpf: item.cpf,
+                uc: item.uc,
+                city: item.city,
+                email: item.email,
+                phone: item.phone,
+                is_client: item.is_client
+            })
+        })
             .then(response => response.json())
-            .then(item => this.setState({ item: item }))
-            .catch(err => console.log(err))
-    }
-
-    getClassifications() {
-
-        fetch(`${process.env.REACT_APP_API_HOST}/classifications`)
-            .then(response => response.json())
-            .then(classifications => {
-                this.setState({ classifications })
+            .then(item => {
+                if (item.dbError == null) {
+                    window.alert(`Salvo com sucesso`)
+                } else {
+                    window.alert(`Erro: ${item.dbError}`)
+                }
             })
             .catch(err => console.log(err))
     }
 
-    submitFormEdit = e => {
-        e.preventDefault()
+    saveComplaint() {
         fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`, {
             method: 'put',
             headers: {
@@ -103,6 +127,59 @@ class Complaint extends Component {
             .catch(err => console.log(err))
     }
 
+    onChange = e => {
+        this.setState({ item: { ...this.state.item, [e.target.id]: e.target.value } })
+    }
+
+    getItem() {
+        fetch(`${process.env.REACT_APP_API_HOST}/complaints/${this.props.params.id}`)
+            .then(response => response.json())
+            .then(item => this.setState({ item: item }))
+            .catch(err => console.log(err))
+    }
+
+    classifyWithAI(item) {
+        fetch(`${process.env.REACT_APP_API_AI_HOST}/classify/valentini`, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: item.ra_id,
+                title: item.title,
+                description: item.description
+            })
+        })
+            .then(response => response.json())
+            .then(json => {
+                let property = 'ai_classification'
+                if (json.category !== undefined) {
+                    this.setState({ item: { ...this.state.item, [property]: json.category.description } })
+                    this.save({ ...this.state.item, [property]: json.category.description })
+                } else {
+                    window.alert(`Houve um erro ao classificar`)
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    getClassifications() {
+
+        fetch(`${process.env.REACT_APP_API_HOST}/classifications`)
+            .then(response => response.json())
+            .then(classifications => {
+                this.setState({ classifications })
+            })
+            .catch(err => console.log(err))
+    }
+
+
+
+    submitFormEdit = e => {
+        e.preventDefault()
+        this.saveComplaint()
+    }
+
     componentDidMount() {
         this.getItem()
         this.getClassifications()
@@ -117,13 +194,19 @@ class Complaint extends Component {
                     </Row>
                     <Row>
                         <Stack direction="horizontal" gap={2}>
-                            <Button variant="info" href="/complaints">Voltar</Button>{' '}
-                            <Button variant="primary">{this.state.item.complaints_status === 'closed' ? 'Status: Respondida' : 'Status: Pendente'}</Button>{' '}
-                            <Button variant="primary" target='_blank' href={(`${process.env.REACT_APP_COMPLAINTS_LINK}` + this.state.item.ra_cod)}>Acessar no reclame aqui</Button>{' '}
-                            <Button variant="primary">Data da reclamação: {this.state.item.date_description}</Button>{' '}
-                            <Button variant="primary" onClick={() => { navigator.clipboard.writeText(this.state.item.uc) }}> Copiar UC {this.state.item.uc}</Button>{' '}
-                            <Button variant="primary">Nota: {this.state.item.complainer_note ? this.state.item.complainer_note : 'Pendente'}</Button>{' '}
-                            <Button variant="success" type='submit'>Salvar</Button>{' '}
+                            <ButtonGroup aria-label="Basic example">
+                                <Button variant="info" href="/complaints">Voltar</Button>
+                                <Button variant="primary">{this.state.item.complaints_status === 'closed' ? 'Respondida' : 'Resposta pendente'}</Button>
+                                <Button variant="primary" target='_blank' href={(`${process.env.REACT_APP_COMPLAINTS_LINK}` + this.state.item.ra_cod)}>Acessar no reclame aqui</Button>
+                                <Button variant="primary" onClick={() => { navigator.clipboard.writeText(this.state.item.uc) }}> Copiar UC {this.state.item.uc}</Button>
+                                <Button variant="primary">Nota: {this.state.item.complainer_note ? this.state.item.complainer_note : 'Pendente'}</Button>
+                                {this.state.item.ai_classification ? ('') : (
+                                    <DropdownButton as={ButtonGroup} title="IA" id="bg-nested-dropdown">
+                                        <Dropdown.Item eventKey="1" onClick={() => this.classifyWithAI(this.state.item)}>Classificar esta reclamação com IA</Dropdown.Item>
+                                    </DropdownButton>
+                                )}
+                                <Button variant="success" type='submit'>Salvar</Button>
+                            </ButtonGroup>
                         </Stack>
                     </Row>
                     <Row>
@@ -164,6 +247,8 @@ class Complaint extends Component {
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Sub-motivo</Form.Label>
+                                            {this.state.item.ai_classification === null ? <Button onClick={() => this.classifyWithAI(this.state.item)} variant="link">Classifique essa reclamação com IA</Button> : <p>Reclamação classificada como: {this.state.item.ai_classification}</p>}
+
                                             <Form.Select id="system_sub_reason" className="system_sub_reason" value={this.state.item.system_sub_reason} onChange={this.onChange}>
                                                 {
                                                     this.state.classifications.map(reason => {
