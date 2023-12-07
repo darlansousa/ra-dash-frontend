@@ -138,8 +138,8 @@ class Complaint extends Component {
             .catch(err => console.log(err))
     }
 
-    classifyWithAI(item) {
-        fetch(`${process.env.REACT_APP_API_AI_HOST}/classify/valentini`, {
+    classifyWithAI(item, method) {
+        fetch(`${process.env.REACT_APP_API_AI_HOST}/classify/${method}`, {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
@@ -202,7 +202,8 @@ class Complaint extends Component {
                                 <Button variant="primary">Nota: {this.state.item.complainer_note ? this.state.item.complainer_note : 'Pendente'}</Button>
                                 {this.state.item.ai_classification ? ('') : (
                                     <DropdownButton as={ButtonGroup} title="IA" id="bg-nested-dropdown">
-                                        <Dropdown.Item eventKey="1" onClick={() => this.classifyWithAI(this.state.item)}>Classificar esta reclamação com IA</Dropdown.Item>
+                                        <Dropdown.Item eventKey="1" onClick={() => this.classifyWithAI(this.state.item, 'valentini')}>Classificar com Valentini</Dropdown.Item>
+                                        <Dropdown.Item eventKey="1" onClick={() => this.classifyWithAI(this.state.item, 'chat-gpt')}>Classificar com Chat-GPT</Dropdown.Item>
                                     </DropdownButton>
                                 )}
                                 <Button variant="success" type='submit'>Salvar</Button>
@@ -247,7 +248,7 @@ class Complaint extends Component {
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Sub-motivo</Form.Label>
-                                            {this.state.item.ai_classification === null ? <Button onClick={() => this.classifyWithAI(this.state.item)} variant="link">Classifique essa reclamação com IA</Button> : <p>Reclamação classificada como: {this.state.item.ai_classification}</p>}
+                                            {this.state.item.ai_classification === null ? <Button onClick={() => this.classifyWithAI(this.state.item, 'valentini')} variant="link">Classifique com IA Valentini</Button> : <p>Sugestão da IA: {this.state.item.ai_classification}</p>}
 
                                             <Form.Select id="system_sub_reason" className="system_sub_reason" value={this.state.item.system_sub_reason} onChange={this.onChange}>
                                                 {
