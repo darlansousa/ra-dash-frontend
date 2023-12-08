@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Alert, Badge } from 'reactstrap';
 
 class CloseForm extends React.Component {
   failure = false
@@ -79,6 +79,9 @@ class CloseForm extends React.Component {
           <Input type="text" name="id_occurrence" id="id_occurrence" onChange={this.onChange} value={this.state.item.id_occurrence === null ? '' : this.state.item.id_occurrence} required />
         </FormGroup>
         <FormGroup>
+        <Alert color='light'>
+        {this.props.item.ai_classification ? `Sub-motivo recomendado pela IA:`: '' } <Badge color="primary">{this.props.item.ai_classification}</Badge>
+        </Alert>
           <Label for="system_sub_reason">Sub-motivo</Label>
           <Input type="select" name="system_sub_reason" id="system_sub_reason" onChange={this.onChange} value={this.state.item.system_sub_reason === null ? 'Sim' : this.state.item.system_sub_reason}>
             {

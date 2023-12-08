@@ -7,6 +7,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import Alert from 'react-bootstrap/Alert';
 import withRouter from '../withRouter'
 
 
@@ -248,7 +249,9 @@ class Complaint extends Component {
                                         </Form.Group>
                                         <Form.Group className="mb-3" >
                                             <Form.Label>Sub-motivo</Form.Label>
-                                            {this.state.item.ai_classification === null ? <Button onClick={() => this.classifyWithAI(this.state.item, 'valentini')} variant="link">Classifique com IA Valentini</Button> : <p>Sugestão da IA: {this.state.item.ai_classification}</p>}
+                                            <Alert variant='light'>
+                                            {this.state.item.ai_classification === null ? <Button onClick={() => this.classifyWithAI(this.state.item, 'valentini')} variant="link">Classifique com IA Valentini</Button> : <p>Sugestão da IA: <b>{this.state.item.ai_classification}</b></p>}
+                                            </Alert>
 
                                             <Form.Select id="system_sub_reason" className="system_sub_reason" value={this.state.item.system_sub_reason} onChange={this.onChange}>
                                                 {
